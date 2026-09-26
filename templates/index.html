@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Fresh Fruits in Jos | Fruity Hub{% endblock %}
+{% block content %}
+<section class="hero-section">
+    <div class="container hero-grid">
+        <div class="hero-copy">
+            <span class="eyebrow"><i class="fa-solid fa-leaf"></i> Fresh from Jos North Fruit Market</span>
+            <h1>Good food starts with <em>fresh fruit.</em></h1>
+            <p>Shop quality fruits from trusted vendors in Jos North and have your order prepared for convenient delivery.</p>
+            <div class="hero-actions"><a class="btn btn-primary" href="{% url 'shop' %}">Shop Fresh Fruits <i class="fa-solid fa-arrow-right"></i></a><a class="text-link" href="{% url 'about' %}">Learn about Fruity Hub</a></div>
+            <div class="hero-note"><i class="fa-solid fa-circle-check"></i><span>Simple ordering &nbsp;&bull;&nbsp; Pay on Delivery or by Card</span></div>
+        </div>
+        <div class="hero-visual"><div class="hero-blob"></div><img src="{% static 'assets/images/hero.jpg.jpg' %}" alt="Fresh assorted fruits"><div class="floating-card"><strong>Fresh daily</strong><span>From local vendors</span></div></div>
+    </div>
+</section>
+
+<section class="section categories-section">
+    <div class="container">
+        <div class="section-heading"><div><span class="eyebrow">Browse our selection</span><h2>Shop by category</h2></div><a class="text-link" href="{% url 'shop' %}">View all fruits <i class="fa-solid fa-arrow-right"></i></a></div>
+        <div class="category-grid">
+            <a class="category-card" href="{% url 'shop' %}?category=Citrus"><img src="{% static 'assets/images/categories/citrus.jpg' %}" alt="Citrus"><span>Citrus</span><small>Fresh & juicy</small></a>
+            <a class="category-card" href="{% url 'shop' %}?category=Tropical"><img src="{% static 'assets/images/categories/tropical.jpg' %}" alt="Tropical fruits"><span>Tropical</span><small>Sweet & vibrant</small></a>
+            <a class="category-card" href="{% url 'shop' %}?category=Berry"><img src="{% static 'assets/images/categories/berries.jpg' %}" alt="Berries"><span>Berries</span><small>Small & delicious</small></a>
+            <a class="category-card" href="{% url 'shop' %}?category=Melon"><img src="{% static 'assets/images/categories/melons.jpg' %}" alt="Melons"><span>Melons</span><small>Cool & refreshing</small></a>
+        </div>
+    </div>
+</section>
+
+<section class="section products-section">
+    <div class="container">
+        <div class="section-heading"><div><span class="eyebrow">Freshly listed</span><h2>Featured fruits</h2></div><a class="text-link" href="{% url 'shop' %}">See all <i class="fa-solid fa-arrow-right"></i></a></div>
+        <div class="product-grid">
+            {% for product in products %}
+            <article class="product-card">
+                <a class="product-image" href="{% url 'product' product.id %}"><img src="{{ product.image.url }}" alt="{{ product.name }}"><span class="fresh-badge">Fresh</span></a>
+                <div class="product-body"><div class="product-meta"><span>{{ product.category }}</span><span>{% if product.stock > 0 %}In stock{% else %}Out of stock{% endif %}</span></div><h3><a href="{% url 'product' product.id %}">{{ product.name }}</a></h3><div class="product-bottom"><strong>₦{{ product.price }}</strong><form method="post" action="{% url 'add_to_cart' product.id %}">{% csrf_token %}<button class="round-add" type="submit" {% if product.stock == 0 %}disabled{% endif %} aria-label="Add {{ product.name }} to cart"><i class="fa-solid fa-plus"></i></button></form></div></div>
+            </article>
+            {% empty %}<div class="empty-state full-width"><i class="fa-solid fa-basket-shopping"></i><h3>No fruits have been added yet.</h3><p>Add products through Django Admin and they will appear here.</p></div>{% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="trust-strip"><div class="container trust-grid"><div><i class="fa-solid fa-seedling"></i><span><b>Fresh selection</b><small>Products listed by vendors</small></span></div><div><i class="fa-solid fa-shop"></i><span><b>Local market</b><small>Jos North Fruit Market</small></span></div><div><i class="fa-solid fa-truck"></i><span><b>Convenient delivery</b><small>Across Jos</small></span></div><div><i class="fa-solid fa-money-bill-wave"></i><span><b>Pay on Delivery or by Card</b><small>Cash on Delivery, or secure test-mode card payment</small></span></div></div></section>
+{% endblock %}

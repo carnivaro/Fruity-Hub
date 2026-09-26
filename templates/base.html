@@ -1,0 +1,159 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fruity Hub - Fresh fruits from Jos North Fruit Market.">
+    <title>{% block title %}Fruity Hub{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'assets/css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/animations.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body data-shop-url="{% url 'shop' %}">
+<header class="site-header">
+    <div class="container nav-wrap">
+        <a href="{% url 'home' %}" class="brand">
+            <img src="{% static 'assets/images/logo.png.png' %}" alt="Fruity Hub logo">
+            <span>Fruity <b>Hub</b></span>
+        </a>
+
+        <button class="menu-toggle" type="button" aria-label="Open navigation" onclick="document.body.classList.toggle('menu-open')">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <nav class="main-nav">
+            <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+            <a href="{% url 'shop' %}" class="{% if request.resolver_match.url_name == 'shop' %}active{% endif %}">Shop</a>
+            <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a>
+            <a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
+        </nav>
+
+        <div class="nav-actions">
+            <form class="search-form" action="{% url 'shop' %}" method="get">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search fruits..." aria-label="Search fruits">
+            </form>
+            {% if user.is_authenticated %}
+                <a class="account-link" href="{% url 'profile' %}"><i class="fa-regular fa-user"></i><span>{{ user.username }}</span></a>
+                <a class="logout-link" href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a class="login-link" href="{% url 'login' %}">Login</a>
+            {% endif %}
+            <a class="cart-link" href="{% url 'cart' %}" aria-label="Shopping cart">
+                <i class="fa-solid fa-basket-shopping"></i>
+                <span id="cartCount" class="cart-badge" data-count-url="{% url 'cart_count' %}" style="display:none;">0</span>
+            </a>
+        </div>
+    </div>
+</header>
+
+
+{% if messages %}
+<div class="toast-container" aria-live="polite" aria-atomic="true">
+
+    {% for message in messages %}
+
+    <div class="toast {{ message.tags }}">
+
+        <i class="toast-icon fa-solid
+            {% if 'error' in message.tags %}
+                fa-circle-exclamation
+            {% elif 'warning' in message.tags %}
+                fa-triangle-exclamation
+            {% else %}
+                fa-circle-check
+            {% endif %}
+        "></i>
+
+        <span class="toast-text">
+            {{ message }}
+        </span>
+
+        <button
+            class="toast-close"
+            type="button"
+            aria-label="Close notification"
+        >
+            &times;
+        </button>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+{% endif %}
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer class="site-footer">
+    <div class="container footer-grid">
+        <div>
+            <a href="{% url 'home' %}" class="brand footer-brand">
+                <img src="{% static 'assets/images/logo.png.png' %}" alt="Fruity Hub logo">
+                <span>Fruity <b>Hub</b></span>
+            </a>
+            <p>Fresh fruits, trusted vendors and convenient ordering from Jos North Fruit Market.</p>
+        </div>
+        <div><h4>Explore</h4><a href="{% url 'shop' %}">Shop Fruits</a><a href="{% url 'about' %}">About Us</a><a href="{% url 'contact' %}">Contact</a></div>
+        <div><h4>Customer</h4><a href="{% url 'cart' %}">Shopping Cart</a><a href="{% url 'orders' %}">My Orders</a><a href="{% url 'profile' %}">Profile</a></div>
+        <div><h4>Visit Us</h4><p>Jos North Fruit Market<br>Jos, Plateau State<br>Mon - Sat: 8:00 AM - 6:00 PM</p></div>
+    </div>
+    <div class="footer-bottom"><div class="container">&copy; 2026 Fruity Hub &middot; Jos North Fruit Market</div></div>
+</footer>
+
+<script src="{% static 'assets/js/cart.js' %}"></script>
+<script src="{% static 'assets/js/animations.js' %}"></script>
+
+{% block scripts %}{% endblock %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const toasts = document.querySelectorAll('.toast');
+
+    toasts.forEach(function (toast) {
+
+        const closeButton = toast.querySelector('.toast-close');
+
+        if (closeButton) {
+            closeButton.addEventListener('click', function () {
+
+                toast.classList.add('toast-hide');
+
+                setTimeout(function () {
+                    toast.remove();
+                }, 250);
+
+            });
+        }
+
+        setTimeout(function () {
+
+            if (toast && toast.isConnected) {
+
+                toast.classList.add('toast-hide');
+
+                setTimeout(function () {
+                    if (toast.isConnected) {
+                        toast.remove();
+                    }
+                }, 250);
+
+            }
+
+        }, 4000);
+
+    });
+
+});
+</script>
+
+</body>
+</html>

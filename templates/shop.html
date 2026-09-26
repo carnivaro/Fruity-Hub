@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block title %}Shop Fresh Fruits | Fruity Hub{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="container">
+        <span class="eyebrow">Fruity Hub Marketplace</span>
+        <h1>Fresh fruits for every day.</h1>
+        <p>Browse fresh fruits available from vendors at Jos North Fruit Market.</p>
+    </div>
+</section>
+
+<section class="section shop-section">
+    <div class="container">
+
+
+    <!-- Shop Toolbar -->
+    <div class="shop-toolbar">
+
+        <div class="shop-heading">
+            <h2>Available Fruits</h2>
+
+            <p>
+                {% if query %}
+                    Results for "{{ query }}"
+                {% else %}
+                    Choose from our current selection.
+                {% endif %}
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Categories -->
+    <div class="filter-links">
+
+        <a
+            class="{% if not selected_category %}active{% endif %}"
+            href="{% url 'shop' %}"
+        >
+            All
+        </a>
+
+        {% for category in categories %}
+            <a
+                class="{% if selected_category == category %}active{% endif %}"
+                href="{% url 'shop' %}?category={{ category }}"
+            >
+                {{ category }}
+            </a>
+        {% endfor %}
+
+    </div>
+
+    <!-- Product Grid -->
+    <div class="product-grid">
+
+        {% for product in products %}
+
+            <article class="product-card">
+
+                <!-- Product Image -->
+                <a
+                    class="product-image"
+                    href="{% url 'product' product.id %}"
+                >
+
+                    {% if product.image %}
+                        <img
+                            src="{{ product.image.url }}"
+                            alt="{{ product.name }}"
+                        >
+                    {% else %}
+                        <div class="product-image-placeholder">
+                            No image available
+                        </div>
+                    {% endif %}
+
+                    {% if product.stock > 0 %}
+                        <span class="fresh-badge">Fresh</span>
+                    {% else %}
+                        <span class="fresh-badge out-of-stock">
+                            Out of stock
+                        </span>
+                    {% endif %}
+
+                </a>
+
+                <!-- Product Information -->
+                <div class="product-body">
+
+                    <div class="product-meta">
+                        <span>{{ product.category }}</span>
+
+                        <span>
+                            {% if product.stock > 0 %}
+                                {{ product.stock }} available
+                            {% else %}
+                                Out of stock
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <h3>
+                        <a href="{% url 'product' product.id %}">
+                            {{ product.name }}
+                        </a>
+                    </h3>
+
+                    <p class="product-description">
+                        {{ product.description|default:"Fresh fruit selected from our market vendors."|truncatechars:80 }}
+                    </p>
+
+                    <div class="product-bottom">
+
+                        <strong>
+                            ₦{{ product.price }}
+                        </strong>
+
+                        {% if product.stock > 0 %}
+
+                            <form
+                                method="post"
+                                action="{% url 'add_to_cart' product.id %}"
+                            >
+                                {% csrf_token %}
+
+                                <input
+                                    type="hidden"
+                                    name="next"
+                                    value="{% url 'shop' %}"
+                                >
+
+                                <button
+                                    class="add-button"
+                                    type="submit"
+                                >
+                                    Add to cart
+                                </button>
+
+                            </form>
+
+                        {% else %}
+
+                            <button
+                                class="add-button"
+                                type="button"
+                                disabled
+                            >
+                                Out of stock
+                            </button>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        {% empty %}
+
+            <!-- No Products -->
+            <div class="empty-state full-width">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <h3>No matching fruits found.</h3>
+
+                <p>
+                    Try another search or browse all available fruits.
+                </p>
+
+                <a
+                    class="btn btn-primary"
+                    href="{% url 'shop' %}"
+                >
+                    View all fruits
+                </a>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+</section>
+
+{% endblock %}
